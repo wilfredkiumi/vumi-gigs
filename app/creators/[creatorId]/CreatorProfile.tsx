@@ -11,10 +11,10 @@ export default function CreatorProfile({ creator }: { creator: Creator }) {
     <div className="min-h-screen bg-background">
       {/* Profile Header */}
       <div className="relative h-48 bg-gradient-to-r from-primary to-secondary">
-        <div className="absolute -bottom-16 mx-auto w-full">
-          <div className="mx-auto max-w-7xl px-6">
-            <div className="flex items-end gap-6">
-              <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-background bg-background">
+        <div className="absolute -bottom-22 sm:-bottom-16 mx-auto w-full px-4 sm:px-6">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col items-center md:flex-row md:items-end gap-6">
+              <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-background mt-16 sm:mt-8 md:mt-0">
                 <Image
                   src={creator.avatar}
                   alt={creator.name}
@@ -22,17 +22,16 @@ export default function CreatorProfile({ creator }: { creator: Creator }) {
                   className="object-cover"
                 />
               </div>
-              <div className="mb-4 flex-1">
-                <h1 className="text-3xl font-bold text-primary-foreground">{creator.name}</h1>
-                <p className="text-primary-foreground/90">{creator.role}</p>
+              <div className="mb-0 flex-1 text-center md:text-left">
+                <h1 className="text-3xl font-bold text-foreground dark:text-white">{creator.name}</h1>
+                <p className="text-muted-foreground dark:text-white/90">{creator.role}</p>
               </div>
-              <div className="mb-4 flex gap-3">
-                <Link href={`/creators/${creator.id}/proposal`}>
-                  <Button size="lg">
-                    Send Proposal
-                  </Button>
-                </Link>
-                <Button variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10">
+              <div className="mb-4 flex gap-2">
+                <Button 
+                  size="lg" 
+                  variant="default" 
+                  className="bg-primary text-white hover:bg-primary/90 dark:bg-primary dark:text-white dark:hover:bg-primary/90"
+                >
                   Message
                 </Button>
               </div>
@@ -41,14 +40,14 @@ export default function CreatorProfile({ creator }: { creator: Creator }) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 pt-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-44 sm:pt-24">
         <div className="grid gap-8 lg:grid-cols-4">
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="space-y-6">
               {/* About */}
               <div className="rounded-lg bg-card p-6 shadow-sm border border-border">
-                <h2 className="mb-4 text-lg font-semibold">About</h2>
+                <h2 className="mb-4 text-lg font-semibold text-foreground">About</h2>
                 <p className="mb-4 text-muted-foreground">{creator.bio}</p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-2 text-muted-foreground">
@@ -75,22 +74,22 @@ export default function CreatorProfile({ creator }: { creator: Creator }) {
 
               {/* Stats */}
               <div className="rounded-lg bg-card p-6 shadow-sm border border-border">
-                <h2 className="mb-4 text-lg font-semibold">Stats</h2>
+                <h2 className="mb-4 text-lg font-semibold text-foreground">Stats</h2>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-2xl font-semibold">{creator.stats.followers.toLocaleString()}</p>
+                    <p className="text-2xl font-semibold text-foreground">{creator.stats.followers.toLocaleString()}</p>
                     <p className="text-sm text-muted-foreground">Followers</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-semibold">{creator.stats.engagement}%</p>
+                    <p className="text-2xl font-semibold text-foreground">{creator.stats.engagement}%</p>
                     <p className="text-sm text-muted-foreground">Engagement</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-semibold">{creator.stats.posts.toLocaleString()}</p>
+                    <p className="text-2xl font-semibold text-foreground">{creator.stats.posts.toLocaleString()}</p>
                     <p className="text-sm text-muted-foreground">Posts</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-semibold">${creator.priceRange.min.toLocaleString()}</p>
+                    <p className="text-2xl font-semibold text-foreground">${creator.priceRange.min.toLocaleString()}</p>
                     <p className="text-sm text-muted-foreground">Starting at</p>
                   </div>
                 </div>
@@ -101,12 +100,12 @@ export default function CreatorProfile({ creator }: { creator: Creator }) {
           {/* Main Content */}
           <div className="lg:col-span-3">
             <div className="rounded-lg bg-card p-6 shadow-sm border border-border">
-              <h2 className="mb-6 text-xl font-semibold">Specialties</h2>
+              <h2 className="mb-6 text-xl font-semibold text-foreground">Specialties</h2>
               <div className="flex flex-wrap gap-2">
                 {creator.specialties.map((specialty, index) => (
                   <span
                     key={index}
-                    className="rounded-full bg-secondary/10 px-3 py-1 text-sm text-secondary-foreground"
+                    className="rounded-full bg-accent px-3 py-1 text-sm font-medium text-accent-foreground"
                   >
                     {specialty}
                   </span>
@@ -115,7 +114,7 @@ export default function CreatorProfile({ creator }: { creator: Creator }) {
             </div>
 
             <div className="mt-6 rounded-lg bg-card p-6 shadow-sm border border-border">
-              <h2 className="mb-6 text-xl font-semibold">Previous Work</h2>
+              <h2 className="mb-6 text-xl font-semibold text-foreground">Previous Work</h2>
               <div className="text-muted-foreground">
                 <p>Worked with: {creator.previousBrands.join(", ")}</p>
               </div>

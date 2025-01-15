@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { ArrowLeft, Send, Paperclip, Video } from 'lucide-react';
+import { ArrowLeft, Send, Paperclip, Video, VideoIcon, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import VideoMeetingModal from '@/app/components/VideoMeetingModal';
@@ -11,12 +11,32 @@ interface Message {
   id: string;
   content: string;
   timestamp: string;
+  type?: 'meeting' | 'text';
+  meetingDetails?: {
+    date: string;
+    time: string;
+    link: string;
+  };
   sender: {
     name: string;
     avatar: string;
     role: 'client' | 'creator';
   };
 }
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleString('en-US', {
+    timeZone: 'UTC',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+};
 
 const messages: Message[] = [
   {
@@ -38,44 +58,103 @@ const messages: Message[] = [
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e',
       role: 'client'
     }
+  },
+  {
+    id: '3',
+    content: "Great portfolio! Let's discuss the project details.",
+    timestamp: '2024-03-20T12:00:00',
+    type: 'meeting',
+    meetingDetails: {
+      date: '2024-03-25',
+      time: '14:00',
+      link: 'https://videomeeting.com/sample-meeting'
+    },
+    sender: {
+      name: 'Sarah Chen',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+      role: 'creator'
+    }
   }
 ];
 
 export default function ConversationPage({ params }: { params: { id: string } }) {
   const [newMessage, setNewMessage] = useState('');
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
-  
-  const conversation = messages.filter(msg => msg.id === params.id || 
-    (msg.id === '2' && params.id === '1'));
+  const [conversation, setConversation] = useState<Message[]>(
+    messages.filter(msg => msg.id === params.id || 
+      (msg.id === '2' && params.id === '1'))
+  );
 
   const handleScheduleMeeting = (meetingDetails: any) => {
-    console.log('Scheduling meeting:', meetingDetails);
-    setIsSchedulerOpen(false);
-    
     const meetingTime = new Date(meetingDetails.date);
     meetingTime.setHours(parseInt(meetingDetails.time.split(':')[0]));
     meetingTime.setMinutes(parseInt(meetingDetails.time.split(':')[1]));
     
-    const confirmationMessage = `Video meeting scheduled for ${meetingTime.toLocaleString()}`;
-    setNewMessage(confirmationMessage);
+    const meetingLink = `https://videomeeting.com/${Math.random().toString(36).substring(7)}`;
+
+    const newMeetingMessage: Message = {
+      id: `${conversation.length + 1}`,
+      content: `Video meeting scheduled for ${formatDate(meetingTime.toISOString())}`,
+      timestamp: new Date().toISOString(),
+      type: 'meeting',
+      meetingDetails: {
+        date: meetingDetails.date,
+        time: meetingDetails.time,
+        link: meetingLink
+      },
+      sender: {
+        name: 'Sarah Chen',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+        role: 'creator'
+      }
+    };
+
+    setConversation(prev => [...prev, newMeetingMessage]);
+    setIsSchedulerOpen(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim()) {
-      // Handle message submission
+      const newTextMessage: Message = {
+        id: `${conversation.length + 1}`,
+        content: newMessage,
+        timestamp: new Date().toISOString(),
+        sender: {
+          name: 'Alex Thompson',
+          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e',
+          role: 'client'
+        }
+      };
+      setConversation(prev => [...prev, newTextMessage]);
       setNewMessage('');
     }
   };
 
-  if (conversation.length === 0) {
-    return <div>Conversation not found</div>;
-  }
+  const generateCalendarLink = (meetingDetails: any) => {
+    const { date, time } = meetingDetails;
+    const startTime = new Date(`${date}T${time}:00`);
+    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); 
+
+    const googleCalendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Project%20Discussion&dates=${
+      startTime.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'}/${
+      endTime.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+    }&details=Video%20meeting%20for%20project%20discussion`;
+
+    return googleCalendarLink;
+  };
+
+  const handleJoinMeeting = (meetingLink: string) => {
+    window.open(meetingLink, '_blank');
+  };
+
+  const handleAddToCalendar = (meetingDetails: any) => {
+    window.open(generateCalendarLink(meetingDetails), '_blank');
+  };
 
   return (
     <div className="min-h-screen bg-neutral-50">
       <div className="mx-auto max-w-4xl px-6 py-8">
-        {/* Header */}
         <div className="mb-6">
           <Link 
             href="/inbox"
@@ -86,17 +165,18 @@ export default function ConversationPage({ params }: { params: { id: string } })
           </Link>
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold">3D Character Animation Project Discussion</h1>
-            <Button
-              onClick={() => setIsSchedulerOpen(true)}
-              className="bg-[#4B269F] hover:bg-[#4B269F]/90"
-            >
-              <Video className="h-4 w-4 mr-2" />
-              Schedule Meeting
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setIsSchedulerOpen(true)}
+                className="bg-[#4B269F] hover:bg-[#4B269F]/90"
+              >
+                <Video className="h-4 w-4 mr-2" />
+                Schedule Meeting
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Messages */}
         <div className="rounded-lg bg-white p-6 shadow-sm">
           <div className="mb-6 space-y-6">
             {conversation.map((message) => (
@@ -113,16 +193,39 @@ export default function ConversationPage({ params }: { params: { id: string } })
                   <div className="mb-1 flex items-center justify-between">
                     <span className="font-medium">{message.sender.name}</span>
                     <span className="text-sm text-neutral-500">
-                      {new Date(message.timestamp).toLocaleString()}
+                      {formatDate(message.timestamp)}
                     </span>
                   </div>
-                  <p className="text-neutral-600">{message.content}</p>
+                  {message.type === 'meeting' && message.meetingDetails ? (
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg space-y-2">
+                      <p className="text-green-700">{message.content}</p>
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={() => handleJoinMeeting(message.meetingDetails!.link)}
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <VideoIcon className="h-4 w-4 mr-2" />
+                          Join Meeting
+                        </Button>
+                        <Button 
+                          onClick={() => handleAddToCalendar(message.meetingDetails)}
+                          size="sm"
+                          variant="outline"
+                        >
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Add to Calendar
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-neutral-600">{message.content}</p>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Message Input */}
           <form onSubmit={handleSubmit} className="flex gap-4">
             <div className="relative flex-1">
               <input
@@ -148,7 +251,6 @@ export default function ConversationPage({ params }: { params: { id: string } })
           </form>
         </div>
 
-        {/* Video Meeting Modal */}
         <VideoMeetingModal
           isOpen={isSchedulerOpen}
           onClose={() => setIsSchedulerOpen(false)}

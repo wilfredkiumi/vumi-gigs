@@ -5,45 +5,98 @@ import { Search, Filter, Star, Users, BarChart2, MessageSquare, Briefcase, Award
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { creators, type CreatorType } from '@/lib/creators';
-import { canViewInfluencerProfile, canSendProposal } from '@/lib/auth';
 import Link from 'next/link';
 
 const categories = [
   "Art & Design",
-  "Gaming",
-  "Technology",
+  "Animation",
+  "Film",
+  "Games",
   "Education",
-  "Lifestyle",
-  "Fashion",
-  "Beauty",
-  "Fitness",
-  "Food"
+  "Technology"
+];
+
+// Dummy creators data
+const creators = [
+  {
+    id: "1",
+    name: "Sarah Chen",
+    type: "influencer",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&h=400",
+    role: "Digital Artist & Content Creator",
+    location: "Vancouver, Canada",
+    specialties: ["3D Art", "Digital Painting", "Animation", "Creative Tutorials"],
+    stats: {
+      followers: 250000,
+      engagement: 4.8,
+      avgComments: 800,
+    },
+    categories: ["Art & Design", "Education", "Technology"],
+    previousBrands: ["Adobe", "Wacom", "Autodesk"],
+    verified: true,
+  },
+  {
+    id: "2",
+    name: "Alex Thompson",
+    type: "talent",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&h=400",
+    role: "Senior 3D Animator",
+    location: "London, UK",
+    specialties: ["Character Animation", "Motion Capture", "Rigging", "Animation Direction"],
+    stats: {
+      followers: 15000,
+      engagement: 3.2,
+      avgComments: 50
+    },
+    categories: ["Animation", "Film", "Games"],
+    previousBrands: ["Pixar", "DreamWorks", "Sony Pictures"],
+    verified: true,
+    talent: {
+      experience: {
+        years: 12
+      }
+    }
+  },
+  {
+    id: "3",
+    name: "Maya Rodriguez",
+    type: "influencer",
+    avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&h=400",
+    role: "Game Developer & Streamer",
+    location: "Madrid, Spain",
+    specialties: ["Game Development", "Unity3D", "Live Coding", "Gaming"],
+    stats: {
+      followers: 180000,
+      engagement: 5.2,
+      avgComments: 600
+    },
+    categories: ["Games", "Technology", "Education"],
+    previousBrands: ["Unity", "Razer", "Intel"],
+    verified: true
+  }
 ];
 
 export default function CreatorsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedType, setSelectedType] = useState<CreatorType | 'all'>('all');
+  const [selectedType, setSelectedType] = useState<'influencer' | 'talent' | 'all'>('all');
   const [showFilters, setShowFilters] = useState(false);
 
-  const canViewInfluencers = canViewInfluencerProfile();
-  const canPropose = canSendProposal();
-
   const filteredCreators = creators.filter(creator => {
-    if (creator.type === 'influencer' && !canViewInfluencers) {
-      return false;
-    }
-
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = 
+      searchQuery === '' || 
       creator.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       creator.specialties.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      creator.categories.some(c => c.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    const matchesCategories = selectedCategories.length === 0 ||
+      creator.categories.some(c => c.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      creator.role.toLowerCase().includes(searchQuery.toLowerCase());
+      
+    const matchesCategories = 
+      selectedCategories.length === 0 || 
       creator.categories.some(c => selectedCategories.includes(c));
-
-    const matchesType = selectedType === 'all' || creator.type === selectedType;
+      
+    const matchesType = 
+      selectedType === 'all' || 
+      creator.type === selectedType;
 
     return matchesSearch && matchesCategories && matchesType;
   });
@@ -56,30 +109,16 @@ export default function CreatorsPage() {
           <div className="mb-6 sm:mb-8">
             <h1 className="text-3xl font-bold text-primary mb-3 sm:text-4xl">Creator Marketplace</h1>
             <p className="text-muted-foreground max-w-2xl">
-              Connect with talented content creators and influencers to promote your brand. 
+              Connect with talented content creators and influencers to promote your brand.
               Browse profiles, check engagement metrics, and send collaboration proposals.
             </p>
-            {!canViewInfluencers && (
-              <div className="mt-4 rounded-lg bg-secondary/10 p-4 text-secondary-foreground">
-                <div className="flex items-center gap-2">
-                  <Lock className="h-5 w-5" />
-                  <p className="font-medium">Influencer Profiles Restricted</p>
-                </div>
-                <p className="mt-1 text-sm">
-                  Sign in as a brand or client to view influencer profiles and their detailed metrics.
-                  <Link href="/auth" className="ml-2 text-primary hover:text-primary/90">
-                    Sign In
-                  </Link>
-                </p>
-              </div>
-            )}
           </div>
 
           <div className="flex flex-col gap-4 sm:flex-row">
             <div className="flex-1 relative">
               <Input
                 type="text"
-                placeholder="Search creators by name, specialty, or category..."
+                placeholder="Search by name, specialty, category, or role..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10"
@@ -135,6 +174,23 @@ export default function CreatorsPage() {
                   ))}
                 </div>
               </div>
+
+              <div className="mt-6 rounded-lg bg-card p-6 shadow-sm border border-border">
+                <h2 className="font-semibold mb-4">Creator Type</h2>
+                <div className="space-y-2">
+                  {['all', 'influencer', 'talent'].map((type) => (
+                    <label key={type} className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        checked={selectedType === type}
+                        onChange={() => setSelectedType(type as 'all' | 'influencer' | 'talent')}
+                        className="rounded-full border-input text-primary focus:ring-ring"
+                      />
+                      <span className="text-sm text-muted-foreground capitalize">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -153,9 +209,7 @@ export default function CreatorsPage() {
                         src={creator.avatar}
                         alt={creator.name}
                         fill
-                        className={`rounded-lg object-cover ${
-                          creator.type === 'influencer' && !canViewInfluencers ? 'blur-sm' : ''
-                        }`}
+                        className="rounded-lg object-cover"
                       />
                       {creator.verified && (
                         <div className="absolute -right-2 -top-2 rounded-full bg-primary p-1">
@@ -169,10 +223,7 @@ export default function CreatorsPage() {
                       <div className="mb-4">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
                           <h3 className="text-lg font-medium">
-                            {creator.type === 'influencer' && !canViewInfluencers
-                              ? 'Influencer Profile'
-                              : creator.name
-                            }
+                            {creator.name}
                           </h3>
                           <span className="inline-flex items-center gap-1 rounded-full bg-secondary/10 px-2 py-0.5 text-xs text-secondary-foreground">
                             {creator.type === 'influencer' ? (
@@ -190,10 +241,7 @@ export default function CreatorsPage() {
                         </div>
                         <p className="text-muted-foreground">{creator.role}</p>
                         <p className="text-sm text-muted-foreground">
-                          {creator.type === 'influencer' && !canViewInfluencers
-                            ? '* Location hidden *'
-                            : creator.location
-                          }
+                          {creator.location}
                         </p>
                       </div>
 
@@ -210,33 +258,26 @@ export default function CreatorsPage() {
 
                       <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4">
                         {creator.type === 'influencer' ? (
-                          canViewInfluencers ? (
-                            <>
-                              <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">
-                                  {creator.stats.followers.toLocaleString()} Followers
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <BarChart2 className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">
-                                  {creator.stats.engagement}% Engagement
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">
-                                  {creator.stats.avgComments.toLocaleString()} Avg. Comments
-                                </span>
-                              </div>
-                            </>
-                          ) : (
-                            <div className="col-span-full flex items-center justify-center gap-2 text-muted-foreground">
-                              <Lock className="h-4 w-4" />
-                              <span>Metrics available for verified brands</span>
+                          <>
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">
+                                {creator.stats.followers.toLocaleString()} Followers
+                              </span>
                             </div>
-                          )
+                            <div className="flex items-center gap-2">
+                              <BarChart2 className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">
+                                {creator.stats.engagement}% Engagement
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">
+                                {creator.stats.avgComments.toLocaleString()} Avg. Comments
+                              </span>
+                            </div>
+                          </>
                         ) : (
                           <>
                             <div className="flex items-center gap-2">
@@ -263,20 +304,13 @@ export default function CreatorsPage() {
 
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="text-sm text-muted-foreground">
-                          {creator.type === 'influencer' && !canViewInfluencers
-                            ? '* Previous collaborations hidden *'
-                            : `Worked with: ${creator.previousBrands.join(", ")}`
-                          }
+                          Worked with: {creator.previousBrands.join(", ")}
                         </div>
-                        {canPropose ? (
+                        <Link href={`/creators/${creator.id}`}>
                           <Button className="w-full sm:w-auto">
-                            Send Proposal
+                            View Profile
                           </Button>
-                        ) : (
-                          <Button variant="outline" asChild className="w-full sm:w-auto">
-                            <Link href="/auth">Sign In to Send Proposal</Link>
-                          </Button>
-                        )}
+                        </Link>
                       </div>
                     </div>
                   </div>

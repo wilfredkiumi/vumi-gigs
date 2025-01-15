@@ -19,6 +19,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6" aria-label="Global">
+        {/* Logo */}
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="text-lg font-bold text-primary sm:text-xl">Vumi</span>
@@ -75,18 +76,29 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* Mobile menu */}
-      <div className={`lg:hidden ${mobileMenuOpen ? 'block' : 'hidden'}`}>
-        <div className="fixed inset-0 z-50" />
-        <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-background px-4 py-6 sm:max-w-sm sm:px-6 sm:ring-1 sm:ring-border/10">
+      {/* Mobile menu modal */}
+      <div
+        className={`${
+          mobileMenuOpen ? 'block' : 'hidden'
+        } lg:hidden fixed inset-0 z-50`}
+      >
+        {/* Background backdrop */}
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+
+        {/* Menu panel */}
+        <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-background px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
-            <Link href="/" className="-m-1.5 p-1.5">
+            <Link 
+              href="/" 
+              className="-m-1.5 p-1.5"
+              onClick={() => setMobileMenuOpen(false)}
+            >
               <span className="text-lg font-bold text-primary">Vumi</span>
               <span className="ml-1 text-lg font-bold text-muted-foreground">Gigs</span>
             </Link>
             <button
               type="button"
-              className="-m-2.5 rounded-md p-2.5 text-muted-foreground"
+              className="-m-2.5 rounded-md p-2.5 text-gray-700"
               onClick={() => setMobileMenuOpen(false)}
             >
               <span className="sr-only">Close menu</span>
@@ -94,13 +106,13 @@ export default function Header() {
             </button>
           </div>
           <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-border">
+            <div className="-my-6 divide-y divide-gray-500/10">
               <div className="space-y-2 py-6">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.name}
@@ -117,6 +129,7 @@ export default function Header() {
                       variant="ghost" 
                       size="icon" 
                       className="relative w-full"
+                      onClick={() => setMobileMenuOpen(false)}
                     >
                       <MessageSquare className="h-5 w-5" />
                       <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
@@ -125,7 +138,10 @@ export default function Header() {
                     </Button>
                   </Link>
                 </div>
-                <Link href="/auth">
+                <Link 
+                  href="/auth"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
                   <Button className="w-full">Sign In</Button>
                 </Link>
               </div>

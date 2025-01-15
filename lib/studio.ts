@@ -1,3 +1,128 @@
+export interface Studio {
+    id: number;
+  name: string;
+  type: string;
+  branding: {
+    colors: {
+      primary: string;
+      secondary: string;
+      accent: string;
+      text: string;
+      background: string;
+    };
+    fonts: {
+      heading: string;
+      body: string;
+    };
+    logo: {
+      main: string;
+      alternate: string;
+      icon: string;
+    };
+    assets: {
+      banners: string[];
+      socialImages: string[];
+    };
+  };
+  contacts: {
+    email: {
+      general: string;
+      press: string;
+      careers: string;
+    };
+    phone: {
+      main: string;
+      international: string;
+    };
+    address: {
+      street: string;
+      city: string;
+      state: string;
+      country: string;
+      postal: string;
+    };
+    pressKit: string;
+  };
+  representatives: {
+    creatorId: number;
+    role: string;
+    bio: string;
+    contact: {
+      email: string;
+    };
+    availability: string[];
+  }[];
+  location: string;
+  description: string;
+  website: string;
+  specialties: string[];
+  teamSize: number;
+  founded: string;
+  projects: {
+    id: string;
+    title: string;
+    category: string;
+    status: string;
+    creator: string;
+    creatorId: number;
+    views: number;
+    image: string;
+    description: string;
+  }[];
+  showcase: {
+    id: string;
+    title: string;
+    category: string;
+    date: string;
+    time: string;
+    location: string;
+    price: string;
+    image: string;
+    description: string;
+    organizerId: number;
+    organizerName: string;
+  }[];
+  products: {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    category: string;
+    creatorId: number;
+    description: string;
+    type: string;
+    features: string[];
+  }[];
+  social: {
+    linkedin: string;
+    twitter: string;
+    instagram: string;
+    vimeo: string;
+  };
+  clients: string[];
+  awards: {
+    name: string;
+    year: string;
+    category: string;
+  }[];
+  businessHours: {
+    timezone: string;
+    schedule: {
+      monday: string;
+      tuesday: string;
+      wednesday: string;
+      thursday: string;
+      friday: string;
+    };
+  };
+  legalInfo: {
+    registrationNumber: string;
+    taxId: string;
+    incorporation: string;
+  };
+  certifications: string[];
+}
+
 export const studios: Studio[] = [
   {
     id: 3000,

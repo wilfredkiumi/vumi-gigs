@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeProvider } from "next-themes";
+import { DayPickerProvider } from "react-day-picker";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -10,7 +11,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      {children}
+      <DayPickerProvider initialProps={{}}>
+        {children}
+      </DayPickerProvider>
     </ThemeProvider>
   );
 }

@@ -32,11 +32,22 @@ export default function Auth() {
         router.push('/');
       } else {
         if (accountType === 'business') {
-          router.push('/auth/business');
+          const companyName = formData.get('companyName') as string;
+          const country = formData.get('country') as string;
+          
+          // TODO: Implement actual business signup logic
+          console.log('Business Signup:', { 
+            email, 
+            password, 
+            companyName, 
+            country,
+            accountType 
+          });
+          router.push('/');
           return;
         }
 
-        // TODO: Implement actual signup logic
+        // TODO: Implement actual personal signup logic
         const name = formData.get('name') as string;
         console.log('Signup:', { email, password, name, accountType });
         router.push('/');
@@ -108,7 +119,32 @@ export default function Auth() {
               </div>
             )}
 
-            {!isLogin && (
+            {!isLogin && accountType === 'business' && (
+              <>
+                <div>
+                  <Label htmlFor="companyName">Company Name</Label>
+                  <Input
+                    type="text"
+                    id="companyName"
+                    name="companyName"
+                    placeholder="Enter your company name"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="country">Country</Label>
+                  <Input
+                    type="text"
+                    id="country"
+                    name="country"
+                    placeholder="Enter your company's country"
+                    required
+                  />
+                </div>
+              </>
+            )}
+
+            {!isLogin && accountType === 'personal' && (
               <div>
                 <Label htmlFor="name">Full Name</Label>
                 <Input

@@ -54,4 +54,13 @@ const config: Config = {
   plugins: [require('tailwindcss-animate')],
 };
 
+export const CHART_COLORS = [
+  '#A13163', // primary
+  '#4B269F', // secondary
+  '#FB3D25', // accent-red
+  '#F99926', // accent-orange
+  '#FFD700', // accent-yellow
+  '#FFA500'  // accent-orange2
+];
+
 export default config;
